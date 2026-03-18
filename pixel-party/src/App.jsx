@@ -207,76 +207,74 @@ export default function App() {
     <div className="max-w-md mx-auto h-[100svh] bg-slate-50 flex flex-col font-sans border-x overflow-hidden relative shadow-2xl">
       
       {/* Header */}
-      <header className="px-6 py-4 bg-white border-b flex items-center justify-between sticky top-0 z-50">
+      <header className={`px-6 py-4 flex items-center justify-between absolute top-0 w-full z-50 transition-colors duration-300 ${
+        view === 'home' 
+          ? 'bg-gradient-to-b from-black/60 to-transparent border-none text-white' 
+          : 'bg-white border-b border-slate-200 text-slate-900'
+      }`}>
         <div className="flex items-center gap-2 cursor-pointer" onClick={goHome}>
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-100 transition-transform active:scale-90">
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-lg transition-transform active:scale-90 ${view === 'home' ? 'bg-indigo-500 shadow-indigo-500/30' : 'bg-indigo-600 shadow-indigo-100'}`}>
             <Zap className="text-white w-5 h-5" fill="currentColor" />
           </div>
-          <h1 className="text-lg font-black tracking-tighter text-slate-800 italic uppercase m-0">A2A PARTY</h1>
+          <h1 className={`text-lg font-black tracking-tighter italic uppercase m-0 ${view === 'home' ? 'text-white' : 'text-slate-800'}`}>A2A PARTY</h1>
         </div>
         {user ? (
           <div className="flex items-center gap-2" onClick={goProfile}>
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-black text-slate-400 leading-none mb-1">分身已同步</p>
-              <p className="text-[11px] font-bold text-slate-800 leading-none">@{user.uid.slice(0,10)}</p>
+              <p className={`text-[10px] font-black leading-none mb-1 ${view === 'home' ? 'text-white/60' : 'text-slate-400'}`}>分身已同步</p>
+              <p className={`text-[11px] font-bold leading-none ${view === 'home' ? 'text-white' : 'text-slate-800'}`}>@{user.uid.slice(0,10)}</p>
             </div>
-            <div className="w-10 h-10 rounded-xl border-2 border-slate-100 bg-slate-50 flex items-center justify-center shadow-sm overflow-hidden cursor-pointer">
+            <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shadow-sm overflow-hidden cursor-pointer ${view === 'home' ? 'border-white/20 bg-black/20' : 'border-slate-100 bg-slate-50'}`}>
               <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${user.uid}`} alt="avatar" />
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-slate-400 italic text-[10px]">
+          <div className={`flex items-center gap-2 italic text-[10px] ${view === 'home' ? 'text-white/60' : 'text-slate-400'}`}>
             <Loader2 size={12} className="animate-spin" /> 认证中...
           </div>
         )}
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto no-scrollbar pb-24 bg-slate-50/30">
+      <main className={`flex-1 w-full no-scrollbar relative ${
+        view === 'home' 
+          ? 'h-full overflow-hidden bg-slate-900' 
+          : 'h-full overflow-y-auto pb-24 pt-[73px] bg-slate-50/30'
+      }`}>
         {view === 'home' && (
-          <div className="p-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-500">
-            {/* Promo Card */}
-            <div className="bg-slate-900 rounded-[32px] p-6 text-white shadow-xl relative overflow-hidden">
-              <div className="relative z-10">
-                <h2 className="font-black text-xl mb-1 flex items-center gap-2 text-indigo-300">
-                  AI 智能聚会 <Sparkles size={18}/>
-                </h2>
-                <p className="text-slate-400 text-xs leading-relaxed max-w-[80%]">
-                  你的分身正在通过 <span className="text-white font-bold">A2A 协议</span> 寻找最契合的社交场景。
-                </p>
+          <div className="h-full w-full snap-y snap-mandatory overflow-y-auto no-scrollbar relative animate-in fade-in duration-500">
+            
+            {/* Overlay Category Tabs */}
+            <div className="fixed top-[70px] left-1/2 -translate-x-1/2 w-full max-w-md z-40 px-4 py-2 pointer-events-none">
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pointer-events-auto justify-center">
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`whitespace-nowrap px-4 py-1.5 rounded-full font-black text-[12px] transition-all cursor-pointer shadow-sm backdrop-blur-md ${
+                      activeCategory === cat 
+                        ? 'bg-white text-slate-900' 
+                        : 'bg-black/30 text-white hover:bg-black/50 border border-white/20'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
               </div>
-              <div className="absolute -top-4 -right-4 opacity-10 rotate-12 transform scale-150"><BrainCircuit size={100}/></div>
-            </div>
-
-            {/* Category Tabs */}
-            <div className="flex gap-3 overflow-x-auto no-scrollbar py-1">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-2xl font-black text-[11px] transition-all cursor-pointer ${
-                    activeCategory === cat 
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' 
-                      : 'bg-white text-slate-500 border border-slate-100 hover:bg-slate-50'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
             </div>
 
             {/* List */}
             {loading ? (
-              <div className="flex flex-col items-center py-20 gap-4">
-                 <Loader2 className="animate-spin text-indigo-600" size={32} />
+              <div className="h-full w-full flex flex-col items-center justify-center gap-4 snap-start snap-always text-white bg-slate-900">
+                 <Loader2 className="animate-spin text-indigo-500" size={32} />
                  <p className="text-xs font-bold text-slate-400">正在检索空间分身...</p>
               </div>
             ) : activities.filter(act => activeCategory === '全部' || act.category === activeCategory).length === 0 ? (
-              <div className="text-center py-20 px-10">
-                 <div className="bg-slate-100 w-16 h-16 rounded-3xl mx-auto mb-4 flex items-center justify-center text-slate-400 shadow-inner">
+              <div className="h-full w-full flex flex-col items-center justify-center snap-start snap-always text-white px-10 text-center bg-slate-900">
+                 <div className="bg-white/10 w-16 h-16 rounded-3xl mx-auto mb-4 flex items-center justify-center shadow-inner">
                     <Users size={32}/>
                  </div>
-                 <p className="text-sm font-bold text-slate-500">
+                 <p className="text-sm font-bold text-slate-400">
                    {activities.length === 0 ? '广场正在加载，请稍候...' : '当前分类暂无活动'}
                  </p>
               </div>
@@ -284,50 +282,86 @@ export default function App() {
               activities.filter(act => activeCategory === '全部' || act.category === activeCategory).map(act => (
                 <div 
                   key={act.id} 
-                  onClick={() => goToDetail(act)}
-                  className="bg-white rounded-[28px] border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                  className="w-full h-full snap-start snap-always relative overflow-hidden bg-slate-900 text-white"
                 >
-                  <div className="p-5 flex gap-4 relative">
-                     <div className="w-20 h-20 bg-slate-50 rounded-2xl flex-shrink-0 flex items-center justify-center text-3xl border border-slate-100 relative overflow-hidden group-hover:shadow-inner transition-shadow">
-                        {act.category === '桌游' ? '🎲' : act.category === '二次元' ? '🏮' : act.category === '户外' ? '⛺️' : '☕'}
-                        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/10 to-transparent"></div>
-                     </div>
-                     <div className="flex-1 min-w-0 text-left">
-                        <div className="flex items-center gap-2 mb-1.5">
-                           <span className="text-[10px] font-black bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded uppercase">#{act.category}</span>
-                           <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1"><Clock size={10}/> {act.date || '随时'}</span>
-                        </div>
-                        <h3 className="font-black text-slate-800 truncate mb-1.5 leading-tight text-base">{act.title}</h3>
-                        
-                        {/* 状态标识：AI发起 vs 已接管 */}
-                        {act.status === 1 ? (
-                          <div className="flex items-center gap-1.5 mb-2 text-[10px] font-black text-emerald-600 bg-emerald-50 w-max px-2 py-0.5 rounded-md border border-emerald-100">
-                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                            由 {act.hostName || '真实用户'} 主理
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5 mb-2 text-[10px] font-black text-slate-500 bg-slate-100 w-max px-2 py-0.5 rounded-md border border-slate-200">
-                            <Sparkles size={10} className="text-indigo-500" />
-                            {act.hostName || 'AI 分身'} 发起，待接管
-                          </div>
-                        )}
-                        
-                        <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">{act.description}</p>
-                     </div>
+                  {/* Card Background / Visuals */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 flex items-center justify-center overflow-hidden">
+                    <div className="absolute text-[300px] opacity-10 blur-xl mix-blend-overlay">
+                       {act.category === '桌游' ? '🎲' : act.category === '二次元' ? '🏮' : act.category === '户外' ? '⛺️' : '☕'}
+                    </div>
+                    {/* Visual elements */}
+                    <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl animate-pulse"></div>
+                    <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-fuchsia-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
                   </div>
-                  <div className="px-5 py-3 bg-slate-50/50 border-t border-slate-100 flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] text-white">
-                           <Zap size={10} fill="currentColor"/>
+
+                  {/* Interactive layer overlay */}
+                  <div className="absolute inset-0 z-10 flex flex-col justify-end pb-24 pt-20 px-4 bg-gradient-to-t from-black/90 via-black/30 to-transparent">
+                    <div className="flex-1" onClick={() => goToDetail(act)}></div>
+                    
+                    <div className="w-[85%] pr-2 pointer-events-none">
+                      <div className="flex items-center gap-2 mb-3 pointer-events-auto">
+                         <span className="text-[10px] font-black bg-white/20 backdrop-blur-md text-white px-2.5 py-1 rounded-md uppercase border border-white/10 shadow-sm">#{act.category}</span>
+                         <span className="text-[10px] font-bold text-white/80 flex items-center gap-1 bg-black/20 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/5"><Clock size={10}/> {act.date || '随时'}</span>
+                      </div>
+                      
+                      <h3 className="font-black text-white text-2xl mb-2 leading-tight drop-shadow-lg pointer-events-auto cursor-pointer" onClick={() => goToDetail(act)}>{act.title}</h3>
+                      
+                      {act.status === 1 ? (
+                        <div className="flex items-center gap-1.5 mb-3 text-[10px] font-black text-emerald-300 bg-emerald-900/60 backdrop-blur-md w-max px-2.5 py-1 rounded-md border border-emerald-500/30 pointer-events-auto">
+                          <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
+                          由 {act.hostName || '真实用户'} 主理
                         </div>
-                        <span className="text-[10px] font-bold text-slate-500">分身共鸣中</span>
+                      ) : (
+                        <div className="flex items-center gap-1.5 mb-3 text-[10px] font-black text-indigo-300 bg-indigo-900/60 backdrop-blur-md w-max px-2.5 py-1 rounded-md border border-indigo-500/30 pointer-events-auto">
+                          <Sparkles size={10} className="text-indigo-400" />
+                          {act.hostName || 'AI 分身'} 发起，待接管
+                        </div>
+                      )}
+                      
+                      <p className="text-[13px] text-white/80 line-clamp-3 leading-relaxed mb-4 drop-shadow-md pointer-events-auto cursor-pointer" onClick={() => goToDetail(act)}>{act.description}</p>
+                      
+                      <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/10 w-max pointer-events-auto cursor-pointer" onClick={() => goToDetail(act)}>
+                         <MapPin size={14} className="text-white/70"/>
+                         <span className="text-xs font-bold text-white/90">{act.location}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                         <div className="h-1.5 w-16 bg-slate-200 rounded-full overflow-hidden">
-                            <div className="h-full bg-indigo-500" style={{width: `${Math.min(((act.joinedCount || 1)/(act.maxParticipants || 10))*100, 100)}%`}}></div>
-                         </div>
-                         <span className="text-[11px] font-black text-indigo-600">{act.joinedCount || 1}/{act.maxParticipants || 10}</span>
+                    </div>
+                  </div>
+
+                  {/* Right Action Bar (TikTok style) */}
+                  <div className="absolute right-3 bottom-28 flex flex-col items-center gap-5 z-20">
+                    <div className="relative group cursor-pointer" onClick={() => goToDetail(act)}>
+                      <div className="w-11 h-11 bg-slate-800 rounded-full border-2 border-white shadow-lg flex items-center justify-center overflow-hidden">
+                         <img src={`https://api.dicebear.com/7.x/pixel-art/svg?seed=${act.hostName}`} alt="avatar" className="w-full h-full object-cover" />
                       </div>
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 bg-indigo-600 rounded-full border-2 border-white flex items-center justify-center text-white shadow-sm">
+                         <Plus size={12} strokeWidth={4} />
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-center gap-1 mt-2">
+                       <button className="w-10 h-10 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors border border-white/10 cursor-pointer" onClick={() => goToDetail(act)}>
+                          <Heart size={20} fill={act.status === 1 ? "currentColor" : "none"} className={act.status === 1 ? "text-pink-500" : ""} />
+                       </button>
+                       <span className="text-[11px] font-black text-white drop-shadow-md">{act.joinedCount || 1}</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                       <button className="w-10 h-10 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors border border-white/10 cursor-pointer" onClick={() => goToDetail(act)}>
+                          <Users size={20} />
+                       </button>
+                       <span className="text-[11px] font-black text-white drop-shadow-md">{act.maxParticipants || 10}</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                       <button className="w-10 h-10 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors border border-white/10 cursor-pointer" onClick={() => goToDetail(act)}>
+                          <Send size={18} className="mr-0.5" />
+                       </button>
+                       <span className="text-[11px] font-black text-white drop-shadow-md">分享</span>
+                    </div>
+                    
+                    <div className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 flex items-center justify-center mt-3 animate-[spin_4s_linear_infinite] shadow-lg cursor-pointer" onClick={() => goToDetail(act)}>
+                       <span className="text-sm">{act.category === '桌游' ? '🎲' : act.category === '二次元' ? '🏮' : act.category === '户外' ? '⛺️' : '☕'}</span>
+                    </div>
                   </div>
                 </div>
               ))
@@ -362,13 +396,17 @@ export default function App() {
 
       {/* Floating Action Bar */}
       {(view === 'home' || view === 'profile') && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 px-8 py-4 rounded-[40px] flex items-center gap-10 shadow-2xl z-50 border border-white/10 ring-8 ring-white/50 backdrop-blur-sm">
+        <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 px-8 py-4 rounded-[40px] flex items-center gap-10 shadow-2xl z-50 border backdrop-blur-md transition-colors ${
+          view === 'home' 
+            ? 'bg-black/60 border-white/10 ring-4 ring-white/10' 
+            : 'bg-slate-900 border-white/10 ring-8 ring-white/50'
+        }`}>
           <button 
             onClick={goHome}
-            className={`transition-all duration-300 flex flex-col items-center gap-1 ${view === 'home' ? 'text-indigo-400 scale-110' : 'text-slate-500 hover:text-white'}`}
+            className={`transition-all duration-300 flex flex-col items-center gap-1 ${view === 'home' ? 'text-white scale-110' : 'text-slate-500 hover:text-white'}`}
           >
             <Users size={24} strokeWidth={view === 'home' ? 2.5 : 2} />
-            {view === 'home' && <div className="w-1 h-1 bg-indigo-400 rounded-full"></div>}
+            {view === 'home' && <div className="w-1 h-1 bg-white rounded-full"></div>}
           </button>
           <button 
             onClick={() => setView('create')}
